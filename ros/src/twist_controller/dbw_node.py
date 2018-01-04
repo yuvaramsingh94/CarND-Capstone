@@ -94,7 +94,10 @@ class DBWNode(object):
             else:
                 self.pid.reset()
             # if <dbw is enabled>:
-            #   self.publish(throttle, brake, steer)
+		throttle     = 0.0
+		brake        = 0.0
+		steering     = 0.0
+                #self.publish(throttle, brake, steer)
             self.publish(throttle, brake, steering)
             rate.sleep()
 

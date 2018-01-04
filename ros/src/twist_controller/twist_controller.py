@@ -8,7 +8,7 @@ ONE_MPH = 0.44704
 class Controller(object):
     def __init__(self):
         # TODO: Implement
-        self.Acc_controller = PID(0.7,0.01,0.3,mn=0.1,mx=1.0)
+        self.Acc_controller = PID(0.5,0.00,0.1,mn=0.1,mx=1.0)
         
 	self.yaw_controller = YawController()
         
@@ -19,13 +19,13 @@ class Controller(object):
         ###try implimenting the  linear pid controller
 
         # 1. find the error
-        Linear_vel_error = 20 - current_linear_velocity[0]
+        Linear_vel_error = 15 - current_linear_velocity[0]
         #print ('this is the linear error ',Linear_vel_error)
         Acceleration = self.Acc_controller.step(Linear_vel_error,1.0/50.0)
 	if dbw_enabled !=True:
 		Acceleration = 0.0
 		Linear_vel_error = 0.0
-		self.Acc_controller.reset()
+		reset()
 	print ('this is the linear error ',Linear_vel_error)
 
         # +1.0 left 0.0 -1.0 right
@@ -43,7 +43,7 @@ class Controller(object):
 
     def reset(self):
 	    self.Acc_controller.reset()
-	    self.steer_controller.reset()
+	    
 
 
     def translate(self,value, ipMin, ipMax, opMin, opMax):
