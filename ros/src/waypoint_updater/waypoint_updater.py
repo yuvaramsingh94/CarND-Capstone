@@ -2,6 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import Int32
 from styx_msgs.msg import Lane, Waypoint
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import math
@@ -29,11 +30,13 @@ class WaypointUpdater(object):
         self.car_x = 0.0
         self.car_y = 0.0
         self.car_z = 0.0
+        self.traffic_signal = -1
         rospy.init_node('waypoint_updater')
-        rospy.loginfo('sdhflsdl')
+        rospy.loginfo('sdhqqqqqqqqqqqqqqqqqdl')
         print ('is this working ')
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
         self.wpt_list = []
         self.car_orientation = []
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
@@ -61,7 +64,7 @@ class WaypointUpdater(object):
                 next_x = []
                 next_y = []
                 next_z = []
-		next_val_x = []
+                next_val_x = []
                 '''
                 for i in range(LOOKAHEAD_WPS):
                     next_x.append(self.car_x +(dist_inc*i)*math.cos(car_yaw))
@@ -78,6 +81,11 @@ class WaypointUpdater(object):
                 pass
             rospy.Rate(10).sleep()
             
+    
+    def traffic_cb(self,msg):
+        print ('the is the traffic : ',msg.data)
+        self.traffic_signal = msg.data
+    
 
     def pose_cb(self, msg):
         # TODO: Implement
@@ -125,24 +133,34 @@ class WaypointUpdater(object):
         # if it is greater than 45 degree , use the next wpts 
         if angle > math.pi/4.0:
             closest_wpt +=1
-        print ("car pts {} closesse pts {} dist {}".format(car_pts,
-                                                           waypoints[closest_wpt].pose.pose.position,
-                                                           closest))
+        #print ("car pts {} closesse pts {} dist {}".format(car_pts,
+        #                                                   waypoints[closest_wpt].pose.pose.position,
+        #                                                   closest))
 
         return closest_wpt
     def find_next_pts(self,waypoints,next_wpt):
         next_x =[]
         next_y =[]
         next_z =[]
-	next_val_x = []
+        next_val_x = []
+        vel = 15.0
+        print ('this is the last wpt',next_wpt + LOOKAHEAD_WPS)
+        if self.traffic_signal != -1:
+            # do the implimentatio nto slow down the car 
+            final_wpt = self.traffic_signal
+            vel = 0.0
 
-        for i in range(next_wpt,next_wpt + LOOKAHEAD_WPS):
+        else :
+            final_wpt = next_wpt + LOOKAHEAD_WPS
+
+
+        for i in range(next_wpt,final_wpt):
             #check if i exceeds the length of the waypoint index 
             index = i%len(waypoints)
             next_x.append(waypoints[index].pose.pose.position.x)
             next_y.append(waypoints[index].pose.pose.position.y)
             next_z.append(waypoints[index].pose.pose.position.z)
-	    next_val_x.append(waypoints[index].twist.twist.linear.x)
+            next_val_x.append(vel)
 
         return next_x,next_y,next_z ,next_val_x
 
@@ -172,14 +190,7 @@ class WaypointUpdater(object):
         #print ("this is the distance between waypoint 1 and 5",self.distance(self.wpt_list,1,5))        
         
 
-    def traffic_cb(self, msg):
-        # TODO: Callback for /traffic_waypoint message. Implement
-        pass
-
-    def obstacle_cb(self, msg):
-        # TODO: Callback for /obstacle_waypoint message. We will implement it later
-        pass
-
+    
     def get_waypoint_velocity(self, waypoint):
         return waypoint.twist.twist.linear.x
 
