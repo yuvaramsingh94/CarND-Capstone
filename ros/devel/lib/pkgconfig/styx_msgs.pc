@@ -1,0 +1,8 @@
+prefix=/home/yuvaram/catkin_ws3/src/CarND-Capstone/ros/devel
+
+Name: styx_msgs
+Description: Description of styx_msgs
+Version: 0.0.0
+Cflags: -I/home/yuvaram/catkin_ws3/src/CarND-Capstone/ros/devel/include
+Libs: -L/home/yuvaram/catkin_ws3/src/CarND-Capstone/ros/devel/lib 
+Requires: 

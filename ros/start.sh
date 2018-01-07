@@ -8,3 +8,6 @@ x-terminal-emulator -e roslaunch launch/styx.launch &
 
 #sleep 5 &&
 #x-terminal-emulator -e rosrun tl_detector image_saver.py
+
+sleep 5 &&
+x-terminal-emulator -e rosrun tl_detector tl_detector.py
